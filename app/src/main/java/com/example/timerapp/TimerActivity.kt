@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import com.example.timerapp.util.NotificationUtil
 import com.example.timerapp.util.PrefUtil
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -86,7 +87,7 @@ class TimerActivity : AppCompatActivity() {
         super.onResume()
         initTimer()
         removeAlarm(this)
-        //TODO: REMOVE BACKGROUND TIMER
+        NotificationUtil.hideNotification(this)
     }
     override fun onPause()
     {
@@ -94,11 +95,11 @@ class TimerActivity : AppCompatActivity() {
         if(timerState==TimerState.Running) {
             timer.cancel()
             val wakeUpTime= setAlarm(this, nowSeconds,secondsRemaining)
-            //TODO: start timer and start notification
+            NotificationUtil.showTimerRunning(this,wakeUpTime)
 
         }
         else if(timerState==TimerState.Paused){
-            //TODO:show notification
+            NotificationUtil.showTimerResumed(this)
         }
 
         PrefUtil.setPreviousSecondsLength(timerLengthSeconds,this)
@@ -216,7 +217,11 @@ class TimerActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                val intent=Intent(this,SettingsActivity::class.java)
+                startActivity(intent)
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
